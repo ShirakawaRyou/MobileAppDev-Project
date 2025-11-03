@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:csen268_project/cubits/project_cubit.dart';
 import 'package:csen268_project/pages/home_page.dart';
+import 'package:csen268_project/pages/camera_page.dart';
+import 'package:csen268_project/pages/media_selection_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:csen268_project/pages/export_screen.dart';
 
@@ -17,6 +19,14 @@ final GoRouter _router = GoRouter(
       path: '/export',
       name: 'export',
       builder: (context, state) => const ExportScreen(),
+      path: '/camera',
+      name: 'camera',
+      builder: (context, state) => const CameraPage(),
+    ),
+    GoRoute(
+      path: '/media-selection',
+      name: 'media-selection',
+      builder: (context, state) => const MediaSelectionPage(),
     ),
   ],
 );

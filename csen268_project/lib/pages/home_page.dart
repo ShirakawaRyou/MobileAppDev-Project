@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:csen268_project/cubits/project_cubit.dart';
 import 'package:csen268_project/widgets/my_project_card.dart';
 import 'package:csen268_project/widgets/bottom_nav_bar.dart';
@@ -78,7 +79,8 @@ class HomePage extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-           context.push('/export'); // ✅ 跳轉到 Export UI
+          // 使用 push 压栈，这样在媒体选择页点叉号可以返回
+          context.push('/media-selection');
         },
         label: const Text('New Project'),
         icon: const Icon(Icons.add),
@@ -91,6 +93,11 @@ class HomePage extends StatelessWidget {
             context.push('/export'); // ✅ 第四個 icon (share) 也能跳轉
           // TODO: jump or update status according to index
           }
+          if (index == 1) {
+            // 跳转到相机页面
+            context.go('/camera');
+          }
+          // TODO: 处理其他索引的导航
         },
       ),
     );
