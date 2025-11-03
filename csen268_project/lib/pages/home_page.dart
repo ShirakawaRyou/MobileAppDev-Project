@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:csen268_project/cubits/project_cubit.dart';
 import 'package:csen268_project/widgets/my_project_card.dart';
 import 'package:csen268_project/widgets/bottom_nav_bar.dart';
-import 'package:go_router/go_router.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -79,7 +78,7 @@ class HomePage extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          // 使用 push 压栈，这样在媒体选择页点叉号可以返回
+          // use push to stack the media selection page, so that the user can go back to the home page by clicking the back button
           context.push('/media-selection');
         },
         label: const Text('New Project'),
@@ -90,14 +89,14 @@ class HomePage extends StatelessWidget {
         currentIndex: 0,
         onTabSelected: (index) {
             if (index == 3) {
-            context.push('/export'); // ✅ 第四個 icon (share) 也能跳轉
+            context.push('/export');
           // TODO: jump or update status according to index
           }
           if (index == 1) {
-            // 跳转到相机页面
+            // jump to the camera page
             context.go('/camera');
           }
-          // TODO: 处理其他索引的导航
+          // TODO: handle other index navigation
         },
       ),
     );

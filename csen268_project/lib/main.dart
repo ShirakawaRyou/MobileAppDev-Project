@@ -19,6 +19,8 @@ final GoRouter _router = GoRouter(
       path: '/export',
       name: 'export',
       builder: (context, state) => const ExportScreen(),
+    ),
+    GoRoute(
       path: '/camera',
       name: 'camera',
       builder: (context, state) => const CameraPage(),

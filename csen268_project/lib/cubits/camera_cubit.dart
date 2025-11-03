@@ -5,7 +5,7 @@ class CameraCubit extends Cubit<CameraState> {
   CameraCubit() : super(const CameraState());
 
   void initializeCamera() {
-    // TODO: 初始化相机
+    // TODO: initialize the camera
     emit(state.copyWith(isInitialized: true));
   }
 
@@ -14,28 +14,28 @@ class CameraCubit extends Cubit<CameraState> {
   }
 
   void takePicture() {
-    // TODO: 拍照功能
+    // TODO: take picture function
     print('Taking picture...');
   }
 
   void toggleRecording() {
     if (state.recordingState == RecordingState.idle) {
       emit(state.copyWith(recordingState: RecordingState.recording));
-      // TODO: 开始录制
+      // TODO: start recording
     } else {
       emit(state.copyWith(recordingState: RecordingState.idle));
-      // TODO: 停止录制
+      // TODO: stop recording
     }
   }
 
   void openGallery() {
-    // TODO: 打开图库
+    // TODO: open gallery
     print('Opening gallery...');
   }
 
   @override
   Future<void> close() {
-    // TODO: 释放相机资源
+    // TODO: release camera resources
     return super.close();
   }
 }

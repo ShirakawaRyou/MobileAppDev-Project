@@ -39,7 +39,7 @@ class _ExportScreenState extends State<ExportScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 預覽圖
+            // preview image
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
@@ -51,7 +51,7 @@ class _ExportScreenState extends State<ExportScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Settings 標題
+            // Settings title
             const Text(
               'Settings',
               style: TextStyle(
@@ -136,7 +136,7 @@ class _ExportScreenState extends State<ExportScreen> {
             ),
             const SizedBox(height: 28),
 
-            // Share 標題
+            // Share title
             const Text(
               'Share',
               style: TextStyle(
@@ -147,7 +147,7 @@ class _ExportScreenState extends State<ExportScreen> {
             ),
             const SizedBox(height: 16),
 
-            // 四個平台 icon
+            // four platform icons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -160,7 +160,7 @@ class _ExportScreenState extends State<ExportScreen> {
 
             const Spacer(),
 
-            // Save 按鈕
+            // Save button
             SizedBox(
               width: double.infinity,
               height: 54,
