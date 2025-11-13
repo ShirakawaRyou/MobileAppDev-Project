@@ -7,12 +7,12 @@ class MyProjectCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   const MyProjectCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.subtitle,
     this.imageAsset,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

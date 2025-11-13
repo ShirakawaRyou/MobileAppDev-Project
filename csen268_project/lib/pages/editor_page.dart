@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:go_router/go_router.dart';
+import 'package:csen268_project/models/export_payload.dart';
 
 enum EditorTab { clip, rotate, adjust }
 
@@ -101,7 +102,7 @@ class _EditorPageState extends State<EditorPage> {
 
               // import/export
               onImport: _importImage,
-              onExport: () => context.go('/export'),
+              onExport: _handleExport,
               background: card,
             ),
           ],
@@ -193,6 +194,25 @@ class _EditorPageState extends State<EditorPage> {
     } finally {
       _isBusy = false;
     }
+  }
+
+  void _handleExport() {
+    if (_imageFile == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please import media before exporting.')),
+        );
+      }
+      return;
+    }
+
+    final payload = ExportPayload(
+      mediaFile: _imageFile!,
+      previewImage: _imageFile!,
+      projectName: 'Untitled Project',
+    );
+
+    context.push('/export', extra: payload);
   }
 
   Future<void> _ensureImageThenCrop() async {

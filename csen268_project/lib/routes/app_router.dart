@@ -4,6 +4,7 @@ import '../pages/export_screen.dart';
 import '../pages/camera_page.dart';
 import '../pages/editor_page.dart';
 import '../pages/media_selection_page.dart';
+import '../models/export_payload.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -31,7 +32,9 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/export',
       name: 'export',
-      builder: (context, state) => const ExportScreen(),
+      builder: (context, state) => ExportScreen(
+        payload: state.extra is ExportPayload ? state.extra as ExportPayload : null,
+      ),
     ),
   ],
 );
