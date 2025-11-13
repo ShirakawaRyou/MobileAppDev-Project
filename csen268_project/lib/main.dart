@@ -11,9 +11,15 @@ import 'firebase_options.dart';
 // Remove old _router and use appRouter
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    // If Firebase initialization fails (e.g., on macOS), continue without it
+    // This allows the app to run for camera/media selection development
+    print('Firebase initialization failed: $e');
+  }
   runApp(const MyApp());
 }
 
