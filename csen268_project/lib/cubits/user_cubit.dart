@@ -59,4 +59,23 @@ class UserCubit extends Cubit<UserState> {
       emit(state.copyWith(loading: false, error: e.toString()));
     }
   }
+  
+  /// Upgrade current user to premium
+  Future<void> upgradeToPremium() async {
+    final currentUser = state.user;
+    if (currentUser == null) return;
+    final premiumUser = AppUser(
+      id: currentUser.id,
+      username: currentUser.username,
+      password: currentUser.password,
+      userType: AppUser.userTypePremium,
+    );
+    emit(state.copyWith(loading: true, error: null));
+    try {
+      await _repo.createUser(premiumUser);
+      emit(state.copyWith(loading: false, user: premiumUser));
+    } catch (e) {
+      emit(state.copyWith(loading: false, error: e.toString()));
+    }
+  }
 }

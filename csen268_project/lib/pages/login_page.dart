@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubits/user_cubit.dart';
 import 'package:go_router/go_router.dart';
+import '../models/user_model.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -17,7 +18,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('login')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: BlocConsumer<UserCubit, UserState>(
@@ -38,32 +38,218 @@ class _LoginPageState extends State<LoginPage> {
               return const Center(child: CircularProgressIndicator());
             }
             return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                TextField(
-                  controller: _usernameController,
-                  decoration: const InputDecoration(labelText: 'username'),
+                const SizedBox(height: 160),
+                const Text(
+                  'Login',
+                  style: TextStyle(
+                    fontFamily: 'Spline Sans',
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    height: 28/24,
+                    letterSpacing: 0,
+                    color: Color(0xFF000000),
+                  ),
                 ),
-                TextField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'password'),
-                  obscureText: true,
+                const SizedBox(height: 40),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Username',
+                        style: TextStyle(
+                          fontFamily: 'Spline Sans',
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          color: Color(0xFF000000),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: _usernameController,
+                        decoration: InputDecoration(
+                          hintText: '',
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFFCCCCCC)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFFCCCCCC)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFF009963)),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      const Text(
+                        'Password',
+                        style: TextStyle(
+                          fontFamily: 'Spline Sans',
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          color: Color(0xFF000000),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: '',
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFFCCCCCC)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFFCCCCCC)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFF009963)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    final username = _usernameController.text.trim();
-                    final password = _passwordController.text.trim();
-                    context.read<UserCubit>().signIn(username, password);
-                  },
-                  child: const Text('login'),
-                ),
-                const SizedBox(height: 10),
-                TextButton(
-                  onPressed: () {
-                    context.push('/register');
-                  },
-                  child: const Text('register'),
+                const SizedBox(height: 40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        final username = _usernameController.text.trim();
+                        final password = _passwordController.text.trim();
+                        context.read<UserCubit>().signIn(username, password);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF009963),
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Sign in',
+                        style: TextStyle(
+                          fontFamily: 'Spline Sans',
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          height: 23/18,
+                          letterSpacing: 0,
+                          color: Color(0xFFF7FCFA),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 40),
+                    ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (dialogContext) {
+                            final _regUsernameController = TextEditingController();
+                            final _regPasswordController = TextEditingController();
+                            return Dialog(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Register',
+                                      style: TextStyle(
+                                        fontFamily: 'Spline Sans',
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF000000),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const Text('Username'),
+                                    const SizedBox(height: 8),
+                                    TextField(
+                                      controller: _regUsernameController,
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const Text('Password'),
+                                    const SizedBox(height: 8),
+                                    TextField(
+                                      controller: _regPasswordController,
+                                      obscureText: true,
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        TextButton(
+                                          onPressed: () => Navigator.of(dialogContext).pop(),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            final username = _regUsernameController.text.trim();
+                                            final password = _regPasswordController.text.trim();
+                                            context.read<UserCubit>().createUser(username, password, AppUser.userTypeNormal);
+                                            Navigator.of(dialogContext).pop();
+                                          },
+                                          child: const Text('Sign up'),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF009963),
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Sign up',
+                        style: TextStyle(
+                          fontFamily: 'Spline Sans',
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          height: 23/18,
+                          letterSpacing: 0,
+                          color: Color(0xFFF7FCFA),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             );

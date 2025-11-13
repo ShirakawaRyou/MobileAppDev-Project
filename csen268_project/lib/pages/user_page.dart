@@ -59,7 +59,74 @@ class UserPage extends StatelessWidget {
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: () {
-                  // TODO: become a premium user
+                  showDialog(
+                    context: context,
+                    builder: (dialogContext) {
+                      return Dialog(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Be our premium user',
+                                    style: TextStyle(
+                                      fontFamily: 'Spline Sans',
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    padding: EdgeInsets.zero,
+                                    constraints: BoxConstraints(),
+                                    icon: const Icon(Icons.close),
+                                    onPressed: () => Navigator.of(dialogContext).pop(),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 24),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      backgroundColor: const Color(0xFFF0F0F0),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                    ),
+                                    onPressed: () async {
+                                      final cubit = context.read<UserCubit>();
+                                      final messenger = ScaffoldMessenger.of(context);
+                                      final navigator = Navigator.of(dialogContext);
+                                      await cubit.upgradeToPremium();
+                                      navigator.pop();
+                                      messenger.showSnackBar(
+                                        const SnackBar(content: Text('Enjoy your premium')),
+                                      );
+                                    },
+                                    child: const Text('Sure', style: TextStyle(color: Colors.black)),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.black,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                    ),
+                                    onPressed: () => Navigator.of(dialogContext).pop(),
+                                    child: const Text('Later', style: TextStyle(color: Colors.white)),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
                 },
                 icon: Image.asset(
                   'assets/icons/gift.png',
@@ -87,17 +154,15 @@ class UserPage extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
+            ElevatedButton(
                 onPressed: () {
                   context.go('/login');
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFF7FCFA),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  backgroundColor: const Color(0xFF009963),
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 child: const Text(
@@ -108,9 +173,9 @@ class UserPage extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     height: 23/18,
                     letterSpacing: 0,
+                    color: Color(0xFFF7FCFA),
                   ),
                 ),
-              ),
             ),
           ],
         ),
