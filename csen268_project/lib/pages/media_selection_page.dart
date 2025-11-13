@@ -21,30 +21,30 @@ class MediaSelectionPage extends StatefulWidget {
 class _MediaSelectionPageState extends State<MediaSelectionPage> {
   MediaType _selectedTab = MediaType.photos;
   
-  // 任务 3.1：相册权限与初始化
+  // Task 3.1: Photo library permission and initialization
   bool _hasPermission = false;
   bool _isLoading = true;
   String? _errorMessage;
   
-  // 任务 3.2 & 3.3：媒体列表
+  // Task 3.2 & 3.3: Media lists
   List<AssetEntity> _photos = [];
   List<AssetEntity> _videos = [];
   bool _isLoadingMedia = false;
   
-  // 任务 3.4：媒体选择（单选）
+  // Task 3.4: Media selection (single selection)
   AssetEntity? _selectedMedia;
   
-  // 分页相关
+  // Pagination related
   int _currentPage = 0;
   static const int _pageSize = 50;
   bool _hasMore = true;
-  bool _isLoadingMore = false; // 防止重复加载
+  bool _isLoadingMore = false; // Prevent duplicate loading
   
-  // 相册列表功能
+  // Album list functionality
   List<AssetPathEntity> _albums = [];
   bool _isLoadingAlbums = false;
-  AssetPathEntity? _selectedAlbum; // 当前选中的相册（用于显示相册详情）
-  List<AssetEntity> _albumMedia = []; // 当前相册的媒体列表
+  AssetPathEntity? _selectedAlbum; // Currently selected album (for displaying album details)
+  List<AssetEntity> _albumMedia = []; // Media list of the current album
   int _albumCurrentPage = 0;
   bool _albumHasMore = true;
   bool _isLoadingAlbumMedia = false;
@@ -55,7 +55,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     _initializePhotoManager();
   }
 
-  // 任务 3.1：相册权限与初始化
+  // Task 3.1: Photo library permission and initialization
   Future<void> _initializePhotoManager() async {
     setState(() {
       _isLoading = true;
@@ -63,19 +63,19 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     });
 
     try {
-      // 请求相册权限
+      // Request photo library permission
       final PermissionState state = await PhotoManager.requestPermissionExtend();
       
       if (state == PermissionState.authorized || state == PermissionState.limited) {
-        // 权限已授予
+        // Permission granted
         setState(() {
           _hasPermission = true;
           _isLoading = false;
         });
-        // 加载媒体
+        // Load media
         await _loadMedia();
       } else {
-        // 权限被拒绝
+        // Permission denied
         setState(() {
           _hasPermission = false;
           _isLoading = false;
@@ -91,9 +91,9 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     }
   }
 
-  // 任务 3.2 & 3.3：加载媒体
+  // Task 3.2 & 3.3: Load media
   Future<void> _loadMedia({bool loadMore = false}) async {
-    // 修复：防止重复加载
+    // Fix: Prevent duplicate loading
     if (loadMore) {
       if (_isLoadingMore || !_hasMore) return;
       setState(() {
@@ -127,7 +127,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     }
   }
 
-  // 任务 3.2：加载照片
+  // Task 3.2: Load photos
   Future<void> _loadPhotos({bool loadMore = false}) async {
     if (!loadMore) {
       _currentPage = 0;
@@ -147,14 +147,14 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
       return;
     }
 
-    // 获取所有照片相册
+    // Get all photo albums
     final AssetPathEntity recentAlbum = albums.first;
     
-    // 修复：使用正确的分页逻辑
+    // Fix: Use correct pagination logic
     final int start = _currentPage * _pageSize;
     final int end = start + _pageSize;
     
-    // 按时间倒序获取照片
+    // Get photos in reverse chronological order
     final List<AssetEntity> assets = await recentAlbum.getAssetListRange(
       start: start,
       end: end,
@@ -163,12 +163,12 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     setState(() {
       _photos.addAll(assets);
       _currentPage++;
-      // 如果返回的数量少于请求的数量，说明没有更多了
+      // If returned count is less than requested, no more items available
       _hasMore = assets.length == _pageSize;
     });
   }
 
-  // 任务 3.3：加载视频
+  // Task 3.3: Load videos
   Future<void> _loadVideos({bool loadMore = false}) async {
     if (!loadMore) {
       _currentPage = 0;
@@ -188,14 +188,14 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
       return;
     }
 
-    // 获取所有视频相册
+    // Get all video albums
     final AssetPathEntity recentAlbum = albums.first;
     
-    // 修复：使用正确的分页逻辑
+    // Fix: Use correct pagination logic
     final int start = _currentPage * _pageSize;
     final int end = start + _pageSize;
     
-    // 按时间倒序获取视频
+    // Get videos in reverse chronological order
     final List<AssetEntity> assets = await recentAlbum.getAssetListRange(
       start: start,
       end: end,
@@ -204,12 +204,12 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     setState(() {
       _videos.addAll(assets);
       _currentPage++;
-      // 如果返回的数量少于请求的数量，说明没有更多了
+      // If returned count is less than requested, no more items available
       _hasMore = assets.length == _pageSize;
     });
   }
 
-  // 加载相册列表
+  // Load album list
   Future<void> _loadAlbums() async {
     if (_isLoadingAlbums) return;
 
@@ -218,7 +218,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     });
 
     try {
-      // 获取所有相册（包括照片和视频）
+      // Get all albums (including photos and videos)
       final List<AssetPathEntity> imageAlbums = await PhotoManager.getAssetPathList(
         type: RequestType.image,
         hasAll: true,
@@ -229,15 +229,15 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
         hasAll: true,
       );
 
-      // 合并相册列表，去重
+      // Merge album lists and remove duplicates
       final Map<String, AssetPathEntity> albumMap = {};
       
-      // 添加照片相册
+      // Add photo albums
       for (var album in imageAlbums) {
         albumMap[album.id] = album;
       }
       
-      // 添加视频相册
+      // Add video albums
       for (var album in videoAlbums) {
         if (!albumMap.containsKey(album.id)) {
           albumMap[album.id] = album;
@@ -256,7 +256,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     }
   }
 
-  // 加载指定相册的媒体
+  // Load media from a specific album
   Future<void> _loadAlbumMedia(AssetPathEntity album, {bool loadMore = false}) async {
     if (loadMore) {
       if (_isLoadingAlbumMedia || !_albumHasMore) return;
@@ -285,7 +285,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
       setState(() {
         _albumMedia.addAll(assets);
         _albumCurrentPage++;
-        // 如果返回的数量少于请求的数量，说明没有更多了
+        // If returned count is less than requested, no more items available
         _albumHasMore = assets.length == _pageSize;
         _isLoadingAlbumMedia = false;
       });
@@ -297,7 +297,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     }
   }
 
-  // 进入相册详情
+  // Enter album details
   void _enterAlbum(AssetPathEntity album) {
     setState(() {
       _selectedAlbum = album;
@@ -306,7 +306,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     _loadAlbumMedia(album);
   }
 
-  // 返回相册列表
+  // Return to album list
   void _backToAlbums() {
     setState(() {
       _selectedAlbum = null;
@@ -317,7 +317,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     });
   }
 
-  // 切换标签页
+  // Switch tab
   void _switchTab(MediaType type) {
     if (_selectedTab != type) {
       setState(() {
@@ -325,7 +325,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
         _selectedMedia = null;
         _currentPage = 0;
         _hasMore = true;
-        _selectedAlbum = null; // 切换标签时退出相册详情
+        _selectedAlbum = null; // Exit album details when switching tabs
         _albumMedia.clear();
       });
       
@@ -337,29 +337,29 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     }
   }
 
-  // 任务 3.4：媒体选择（单选）
+  // Task 3.4: Media selection (single selection)
   void _selectMedia(AssetEntity asset) {
     setState(() {
       _selectedMedia = asset;
     });
   }
 
-  // 获取相册中的媒体数量
+  // Get media count in album
   Future<int> _getAlbumCount(AssetPathEntity album) async {
     try {
-      // 获取前1000个来估算数量（photo_manager 没有直接的 count 方法）
+      // Get first 1000 items to estimate count (photo_manager doesn't have direct count method)
       final assets = await album.getAssetListRange(start: 0, end: 1000);
       if (assets.length < 1000) {
         return assets.length;
       }
-      // 如果超过1000，返回1000+作为近似值
+      // If more than 1000, return 1000+ as approximate value
       return 1000;
     } catch (e) {
       return 0;
     }
   }
 
-  // 格式化时长
+  // Format duration
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final hours = duration.inHours;
@@ -405,7 +405,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
         children: [
           Row(
             children: [
-              // 如果在相册详情页，显示返回按钮；否则显示关闭按钮
+              // Show back button if in album details, otherwise show close button
               IconButton(
                 icon: Icon(
                   _selectedAlbum != null
@@ -567,11 +567,11 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     }
 
     if (_selectedTab == MediaType.albums) {
-      // 如果选中了相册，显示相册详情
+      // If album is selected, show album details
       if (_selectedAlbum != null) {
         return _buildAlbumMediaGrid();
       }
-      // 否则显示相册列表
+      // Otherwise show album list
       return _buildAlbumsList();
     }
 
@@ -608,9 +608,9 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
         itemCount: mediaList.length + (_hasMore && !_isLoadingMore ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == mediaList.length) {
-            // 加载更多指示器
+            // Load more indicator
             if (_hasMore && !_isLoadingMore) {
-              // 使用 WidgetsBinding 确保在下一帧加载
+              // Use WidgetsBinding to ensure loading in next frame
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 _loadMedia(loadMore: true);
               });
@@ -651,7 +651,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // 缩略图
+            // Thumbnail
             FutureBuilder<Widget?>(
               future: _buildThumbnail(asset),
               builder: (context, snapshot) {
@@ -661,7 +661,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
                 return _buildPlaceholderImage();
               },
             ),
-            // 选中状态覆盖层
+            // Selected state overlay
             if (isSelected)
               Container(
                 color: const Color(0xFF20C978).withValues(alpha: 0.3),
@@ -673,7 +673,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
                   ),
                 ),
               ),
-            // 视频播放按钮
+            // Video play button
             if (isVideo)
               Container(
                 color: Colors.black.withValues(alpha: 0.2),
@@ -685,7 +685,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
                   ),
                 ),
               ),
-            // 视频时长
+            // Video duration
             if (isVideo)
               FutureBuilder<int>(
                 future: Future.value(asset.duration),
@@ -752,7 +752,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     );
   }
 
-  // 任务 3.6：Add 按钮功能
+  // Task 3.6: Add button functionality
   Widget _buildAddButton(BuildContext context) {
     final hasSelection = _selectedMedia != null;
 
@@ -792,7 +792,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     );
   }
 
-  // 任务 3.6：处理添加按钮点击
+  // Task 3.6: Handle add button click
   Future<void> _handleAdd(BuildContext context) async {
     if (_selectedMedia == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -804,7 +804,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     }
 
     try {
-      // 获取媒体文件路径
+      // Get media file path
       final file = await _selectedMedia!.file;
       if (file == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -815,10 +815,10 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
         return;
       }
 
-      // 将选中的媒体路径传递给 Editor Page
+      // Pass selected media path to Editor Page
       final selectedPaths = [file.path];
       
-      // 导航到编辑器页面
+      // Navigate to editor page
       context.push('/editor', extra: selectedPaths);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -829,7 +829,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     }
   }
 
-  // 构建相册列表
+  // Build album list
   Widget _buildAlbumsList() {
     if (_isLoadingAlbums) {
       return const Center(
@@ -862,7 +862,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     );
   }
 
-  // 构建相册项
+  // Build album item
   Widget _buildAlbumItem(AssetPathEntity album) {
     return FutureBuilder<Widget?>(
       future: _buildAlbumThumbnail(album),
@@ -878,7 +878,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
             ),
             child: Row(
               children: [
-                // 相册封面
+                // Album cover
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
@@ -891,7 +891,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                // 相册信息
+                // Album information
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -935,10 +935,10 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     );
   }
 
-  // 构建相册封面缩略图
+  // Build album cover thumbnail
   Future<Widget?> _buildAlbumThumbnail(AssetPathEntity album) async {
     try {
-      // 获取相册的第一张图片作为封面
+      // Get first image from album as cover
       final assets = await album.getAssetListRange(start: 0, end: 1);
       if (assets.isEmpty) return null;
 
@@ -958,7 +958,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
     return null;
   }
 
-  // 构建相册详情网格（显示相册内的媒体）
+  // Build album detail grid (display media in album)
   Widget _buildAlbumMediaGrid() {
     if (_albumMedia.isEmpty && !_isLoadingAlbumMedia) {
       return Center(
@@ -985,7 +985,7 @@ class _MediaSelectionPageState extends State<MediaSelectionPage> {
         itemCount: _albumMedia.length + (_albumHasMore && !_isLoadingAlbumMedia ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == _albumMedia.length) {
-            // 加载更多指示器
+            // Load more indicator
             if (_albumHasMore && !_isLoadingAlbumMedia) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (_selectedAlbum != null) {
