@@ -15,8 +15,11 @@ import 'editor_video_controls.dart';
 import 'trim_page.dart';
 
 class EditorPage extends StatefulWidget {
-  const EditorPage({super.key});
-
+  final List<String> selectedMediaPaths;
+  const EditorPage({
+    super.key,
+    this.selectedMediaPaths = const [],
+  });
   @override
   State<EditorPage> createState() => _EditorPageState();
 }
@@ -39,7 +42,14 @@ class _EditorPageState extends State<EditorPage> {
   VideoPlayerController? _videoController;
 
   final ImagePicker _picker = ImagePicker();
-
+  @override
+  void initState() {
+    super.initState();
+    // If media paths are provided, load the first one
+    if (widget.selectedMediaPaths.isNotEmpty) {
+      _imageFile = File(widget.selectedMediaPaths.first);
+    }
+  }
   @override
   void dispose() {
     _videoController?.dispose();
