@@ -2,7 +2,7 @@ import 'package:go_router/go_router.dart';
 import '../pages/home_page.dart';
 import '../pages/export_screen.dart';
 import '../pages/camera_page.dart';
-import '../pages/editor_page.dart';
+import '../pages/editor/editor_page.dart';
 import '../pages/media_selection_page.dart';
 import '../pages/register_page.dart';
 import '../pages/login_page.dart';
