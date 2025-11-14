@@ -224,7 +224,7 @@ class _ExportScreenState extends State<ExportScreen> {
     Widget child;
 
     if (request == null) {
-      child = _buildPlaceholder('目前沒有可預覽的檔案');
+      child = _buildPlaceholder('No preview available yet');
     } else if (request.isVideo) {
       child = _buildVideoPreview();
     } else {
@@ -245,7 +245,7 @@ class _ExportScreenState extends State<ExportScreen> {
   Widget _buildImagePreview(String path) {
     final file = File(path);
     if (!file.existsSync()) {
-      return _buildPlaceholder('找不到圖片檔案');
+      return _buildPlaceholder('Image file not found');
     }
     return Image.file(
       file,
@@ -261,7 +261,7 @@ class _ExportScreenState extends State<ExportScreen> {
     }
 
     if (_videoController == null || !_videoController!.value.isInitialized) {
-      return _buildPlaceholder('無法載入影片預覽');
+      return _buildPlaceholder('Unable to load video preview');
     }
 
     return GestureDetector(
@@ -337,7 +337,7 @@ class _ExportScreenState extends State<ExportScreen> {
 
     final file = File(request.filePath);
     if (!file.existsSync()) {
-      _showMessage('找不到影片檔案');
+      _showMessage('Video file not found');
       return;
     }
 
@@ -364,7 +364,7 @@ class _ExportScreenState extends State<ExportScreen> {
       setState(() {
         _initializingVideo = false;
       });
-      _showMessage('影片初始化失敗：$e');
+      _showMessage('Failed to initialize video: $e');
     }
   }
 
@@ -376,41 +376,41 @@ class _ExportScreenState extends State<ExportScreen> {
   Future<void> _shareToPlatform(String platformName) async {
     final request = widget.request;
     if (request == null) {
-      _showMessage('請先從編輯器輸出檔案');
+      _showMessage('Please export from the editor first');
       return;
     }
 
     final file = File(request.filePath);
     if (!file.existsSync()) {
-      _showMessage('找不到要分享的檔案');
+      _showMessage('File to share not found');
       return;
     }
 
     try {
       await Share.shareXFiles([
         XFile(request.filePath),
-      ], text: '我使用 CSEN268 Project 創作的作品，分享至 $platformName！');
+      ], text: 'Created with CSEN268 Project and sharing on $platformName!');
     } catch (e) {
-      _showMessage('分享失敗：$e');
+      _showMessage('Share failed: $e');
     }
   }
 
   Future<void> _saveToDevice() async {
     final request = widget.request;
     if (request == null) {
-      _showMessage('尚無可以儲存的檔案');
+      _showMessage('No file available to save');
       return;
     }
 
     final file = File(request.filePath);
     if (!file.existsSync()) {
-      _showMessage('找不到檔案，請重新輸出');
+      _showMessage('File not found, please export again');
       return;
     }
 
     final hasPermission = await _ensurePermission();
     if (!hasPermission) {
-      _showMessage('儲存權限被拒絕，請到設定中開啟');
+      _showMessage('Storage permission denied, please enable it in settings');
       return;
     }
 
@@ -429,10 +429,12 @@ class _ExportScreenState extends State<ExportScreen> {
           : await _saveImageToGallery(request.filePath);
 
       if (!mounted) return;
-      _showMessage(saved ? '已成功儲存到相簿' : '儲存失敗，請稍後再試');
+      _showMessage(
+        saved ? 'Saved to gallery successfully' : 'Save failed, please retry',
+      );
     } catch (e) {
       if (!mounted) return;
-      _showMessage('儲存失敗：$e');
+      _showMessage('Save failed: $e');
     } finally {
       if (!mounted) return;
       setState(() {
