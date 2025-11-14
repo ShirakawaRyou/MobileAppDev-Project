@@ -47,6 +47,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/editor',
       name: 'editor',
+      // builder: (context, state) => const EditorPage(),
       builder: (context, state) {
         // Get selected media paths from extra
         final selectedMediaPaths = state.extra as List<String>? ?? [];
