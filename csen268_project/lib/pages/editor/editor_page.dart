@@ -8,6 +8,12 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:video_player/video_player.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:csen268_project/repositories/project_repository.dart';
+import 'package:csen268_project/cubits/user_cubit.dart';
+import 'package:csen268_project/models/project_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'editor_models.dart';
 import 'editor_common_widgets.dart';
@@ -40,9 +46,13 @@ class _EditorPageState extends State<EditorPage> {
   VideoPlayerController? _videoController;
 
   final ImagePicker _picker = ImagePicker();
+  late final ProjectRepository _projectRepo;
+
   @override
   void initState() {
     super.initState();
+    final userId = context.read<UserCubit>().state.user?.id ?? '';
+    _projectRepo = ProjectRepository(userId: userId);
     // If media paths are provided, load the first one
     if (widget.selectedMediaPaths.isNotEmpty) {
       _imageFile = File(widget.selectedMediaPaths.first);
@@ -132,7 +142,7 @@ class _EditorPageState extends State<EditorPage> {
                 onSaturation: (v) => setState(() => _saturation = v),
                 onTemperature: (v) => setState(() => _temperature = v),
 
-                onImport: _importImage,
+                onImport: _importFromProject,
                 onExport: _exportPhoto,
                 background: cardColor,
               )
@@ -273,13 +283,6 @@ class _EditorPageState extends State<EditorPage> {
   // =====================================================
   //                  PHOTO IMPORT & CROP
   // =====================================================
-  Future<void> _importImage() async {
-    final picked = await _picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() => _imageFile = File(picked.path));
-    }
-  }
-
   Future<void> _cropImageFlow() async {
     if (_imageFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -407,5 +410,52 @@ class _EditorPageState extends State<EditorPage> {
     );
     if (!mounted) return;
     context.push('/export', extra: request);
+  }
+
+  // =====================================================
+  //                  PROJECT IMPORT
+  // =====================================================
+  Future<void> _importFromProject() async {
+    final projects = await _projectRepo.getAllProjects();
+    final selected = await showModalBottomSheet<Project>(
+      context: context,
+      builder: (_) => ListView(
+        children: projects.map((p) => ListTile(
+          leading: p.imageUrl != null
+              ? (p.imageUrl!.startsWith('http')
+                  ? Image.network(
+                      p.imageUrl!,
+                      width: 40,
+                      height: 40,
+                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                    )
+                  : Image.file(
+                      File(p.imageUrl!),
+                      width: 40,
+                      height: 40,
+                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                    ))
+              : null,
+          title: Text(p.name),
+          onTap: () => Navigator.pop(context, p),
+        )).toList(),
+      ),
+    );
+    if (selected != null && selected.imageUrl != null) {
+      late final File file;
+      if (selected.imageUrl!.startsWith('http')) {
+        final response = await http.get(Uri.parse(selected.imageUrl!));
+        final dir = await getTemporaryDirectory();
+        file = File('${dir.path}/${selected.id}.png');
+        await file.writeAsBytes(response.bodyBytes);
+      } else {
+        file = File(selected.imageUrl!);
+      }
+      setState(() => _imageFile = file);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("please select a valid project image")),
+      );
+    }
   }
 }
