@@ -7,9 +7,7 @@ import 'package:csen268_project/models/export_request.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:csen268_project/repositories/project_repository.dart';
@@ -20,8 +18,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'editor_models.dart';
 import 'editor_common_widgets.dart';
 import 'editor_photo_controls.dart';
-import 'editor_video_controls.dart';
-import 'trim_page.dart';
 
 class EditorPage extends StatefulWidget {
   final List<String> selectedMediaPaths;
@@ -42,13 +38,6 @@ class _EditorPageState extends State<EditorPage> {
   File? _imageFile;
   EditorTab _tab = EditorTab.adjust;
 
-  // ---------------- VIDEO STATE -------------------
-  EditMode _mode = EditMode.photo;
-
-  File? _videoFile;
-  VideoPlayerController? _videoController;
-
-  final ImagePicker _picker = ImagePicker();
   late final ProjectRepository _projectRepo;
 
   @override
@@ -64,7 +53,6 @@ class _EditorPageState extends State<EditorPage> {
 
   @override
   void dispose() {
-    _videoController?.dispose();
     super.dispose();
   }
 
@@ -94,12 +82,6 @@ class _EditorPageState extends State<EditorPage> {
           children: [
             const SizedBox(height: 6),
 
-            /// Photo / Video 模式切换
-            ModeSwitcher(
-              mode: _mode,
-              onChanged: (m) => setState(() => _mode = m),
-            ),
-
             /// Preview 区域
             Expanded(
               child: Padding(
@@ -111,9 +93,7 @@ class _EditorPageState extends State<EditorPage> {
                         ? const Color(0xFF1B1F24)
                         : const Color(0xFFEFF3EF),
                     child: Center(
-                      child: _mode == EditMode.photo
-                          ? _buildPhotoPreview(isDark)
-                          : _buildVideoPreview(isDark),
+                      child: _buildPhotoPreview(isDark),
                     ),
                   ),
                 ),
@@ -121,41 +101,33 @@ class _EditorPageState extends State<EditorPage> {
             ),
 
             /// Bottom Controls
-            if (_mode == EditMode.photo)
-              PhotoBottomControls(
-                tab: _tab,
-                onTabChanged: (t) async {
-                  if (t == EditorTab.clip) {
-                    await _cropImageFlow();
-                  } else {
-                    setState(() => _tab = t);
-                  }
-                },
-                // rotate
-                rotation: _rotationDeg,
-                onRotation: (v) => setState(() => _rotationDeg = v),
+            PhotoBottomControls(
+              tab: _tab,
+              onTabChanged: (t) async {
+                if (t == EditorTab.clip) {
+                  await _cropImageFlow();
+                } else {
+                  setState(() => _tab = t);
+                }
+              },
+              // rotate
+              rotation: _rotationDeg,
+              onRotation: (v) => setState(() => _rotationDeg = v),
 
-                // adjust
-                brightness: _brightness,
-                contrast: _contrast,
-                saturation: _saturation,
-                temperature: _temperature,
-                onBrightness: (v) => setState(() => _brightness = v),
-                onContrast: (v) => setState(() => _contrast = v),
-                onSaturation: (v) => setState(() => _saturation = v),
-                onTemperature: (v) => setState(() => _temperature = v),
+              // adjust
+              brightness: _brightness,
+              contrast: _contrast,
+              saturation: _saturation,
+              temperature: _temperature,
+              onBrightness: (v) => setState(() => _brightness = v),
+              onContrast: (v) => setState(() => _contrast = v),
+              onSaturation: (v) => setState(() => _saturation = v),
+              onTemperature: (v) => setState(() => _temperature = v),
 
-                onImport: _importFromProject,
-                onExport: _exportPhoto,
-                background: cardColor,
-              )
-            else
-              VideoControls(
-                background: cardColor,
-                onImportVideo: _importVideo,
-                onTrimVideo: _openTrimVideo,
-                onExportVideo: _exportVideo,
-              ),
+              onImport: _importFromProject,
+              onExport: _exportPhoto,
+              background: cardColor,
+            ),
           ],
         ),
       ),
@@ -233,75 +205,7 @@ class _EditorPageState extends State<EditorPage> {
   }
 
   // =====================================================
-  //                       VIDEO PREVIEW
-  // =====================================================
-  Widget _buildVideoPreview(bool isDark) {
-    if (_videoController == null || !_videoController!.value.isInitialized) {
-      return Icon(
-        Icons.video_library_outlined,
-        size: 72,
-        color: isDark ? Colors.white70 : Colors.black45,
-      );
-    }
-
-    return GestureDetector(
-      onTap: () {
-        if (_videoController!.value.isPlaying) {
-          _videoController!.pause();
-        } else {
-          _videoController!.play();
-        }
-        setState(() {});
-      },
-      child: AspectRatio(
-        aspectRatio: _videoController!.value.aspectRatio,
-        child: VideoPlayer(_videoController!),
-      ),
-    );
-  }
-
-  Future<void> _importVideo() async {
-    final picked = await _picker.pickVideo(source: ImageSource.gallery);
-    if (picked == null) return;
-
-    _videoFile = File(picked.path);
-    await _loadVideoPlayer();
-  }
-
-  Future<void> _loadVideoPlayer() async {
-    if (_videoFile == null) return;
-    _videoController?.dispose();
-    _videoController = VideoPlayerController.file(_videoFile!);
-    await _videoController!.initialize();
-    _videoController!.setLooping(true);
-    setState(() {});
-    _videoController!.play();
-  }
-
-  // =====================================================
-  //                   OPEN TRIM PAGE (video_editor)
-  // =====================================================
-  Future<void> _openTrimVideo() async {
-    if (_videoFile == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please import a video first.")),
-      );
-      return;
-    }
-
-    final result = await Navigator.push<String?>(
-      context,
-      MaterialPageRoute(builder: (_) => TrimPage(videoFile: _videoFile!)),
-    );
-
-    if (result != null) {
-      _videoFile = File(result);
-      await _loadVideoPlayer();
-    }
-  }
-
-  // =====================================================
-  //                    EXPORT VIDEO
+  //                    EXPORT PHOTO
   // =====================================================
   Future<void> _exportPhoto() async {
     if (_imageFile == null) {
@@ -322,23 +226,6 @@ class _EditorPageState extends State<EditorPage> {
     final request = ExportRequest(
       filePath: renderedFile.path,
       mediaType: ExportMediaType.photo,
-    );
-    if (!mounted) return;
-    context.push('/export', extra: request);
-  }
-
-  Future<void> _exportVideo() async {
-    if (_videoFile == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("No video to export.")));
-      return;
-    }
-
-    final request = ExportRequest(
-      filePath: _videoFile!.path,
-      mediaType: ExportMediaType.video,
-      duration: _videoController?.value.duration,
     );
     if (!mounted) return;
     context.push('/export', extra: request);
