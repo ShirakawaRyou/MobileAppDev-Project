@@ -1,37 +1,4 @@
 import 'package:flutter/material.dart';
-import 'editor_models.dart';
-
-/// 顶部 Photo / Video 切换
-class ModeSwitcher extends StatelessWidget {
-  final EditMode mode;
-  final ValueChanged<EditMode> onChanged;
-
-  const ModeSwitcher({
-    super.key,
-    required this.mode,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ChoiceChip(
-          label: const Text('Photo'),
-          selected: mode == EditMode.photo,
-          onSelected: (_) => onChanged(EditMode.photo),
-        ),
-        const SizedBox(width: 12),
-        ChoiceChip(
-          label: const Text('Video'),
-          selected: mode == EditMode.video,
-          onSelected: (_) => onChanged(EditMode.video),
-        ),
-      ],
-    );
-  }
-}
 
 /// 下方有文字 + 实时数值的 Slider
 class LabeledSlider extends StatelessWidget {
