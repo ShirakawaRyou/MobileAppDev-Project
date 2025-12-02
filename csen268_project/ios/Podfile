@@ -31,9 +31,9 @@ target 'Runner' do
   use_frameworks! :linkage => :static
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-  # Firebase In-App Messaging and Analytics
-  pod 'Firebase/InAppMessagingDisplay'
-  pod 'Firebase/Analytics'
+  # Note: Firebase dependencies are automatically managed by Flutter plugins
+  # firebase_in_app_messaging plugin handles Firebase/InAppMessagingDisplay
+  # firebase_core plugin handles Firebase/Analytics
   target 'RunnerTests' do
     inherit! :search_paths
   end

@@ -1208,6 +1208,12 @@ PODS:
   - Firebase/Firestore (12.4.0):
     - Firebase/CoreOnly
     - FirebaseFirestore (~> 12.4.0)
+  - Firebase/InAppMessaging (12.4.0):
+    - Firebase/CoreOnly
+    - FirebaseInAppMessaging (~> 12.4.0-beta)
+  - Firebase/Messaging (12.4.0):
+    - Firebase/CoreOnly
+    - FirebaseMessaging (~> 12.4.0)
   - firebase_auth (6.1.2):
     - Firebase/Auth (= 12.4.0)
     - firebase_core
@@ -1215,6 +1221,16 @@ PODS:
   - firebase_core (4.2.1):
     - Firebase/CoreOnly (= 12.4.0)
     - Flutter
+  - firebase_in_app_messaging (0.9.0-4):
+    - Firebase/InAppMessaging (= 12.4.0)
+    - firebase_core
+    - Flutter
+  - firebase_messaging (16.0.4):
+    - Firebase/Messaging (= 12.4.0)
+    - firebase_core
+    - Flutter
+  - FirebaseABTesting (12.4.0):
+    - FirebaseCore (~> 12.4.0)
   - FirebaseAppCheckInterop (12.4.0)
   - FirebaseAuth (12.4.0):
     - FirebaseAppCheckInterop (~> 12.4.0)
@@ -1254,10 +1270,34 @@ PODS:
     - gRPC-Core (~> 1.69.0)
     - leveldb-library (~> 1.22)
     - nanopb (~> 3.30910.0)
+  - FirebaseInAppMessaging (12.4.0-beta):
+    - FirebaseABTesting (~> 12.4.0)
+    - FirebaseCore (~> 12.4.0)
+    - FirebaseInstallations (~> 12.4.0)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/UserDefaults (~> 8.1)
+    - nanopb (~> 3.30910.0)
+  - FirebaseInstallations (12.4.0):
+    - FirebaseCore (~> 12.4.0)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/UserDefaults (~> 8.1)
+    - PromisesObjC (~> 2.4)
+  - FirebaseMessaging (12.4.0):
+    - FirebaseCore (~> 12.4.0)
+    - FirebaseInstallations (~> 12.4.0)
+    - GoogleDataTransport (~> 10.1)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.1)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/Reachability (~> 8.1)
+    - GoogleUtilities/UserDefaults (~> 8.1)
+    - nanopb (~> 3.30910.0)
   - FirebaseSharedSwift (12.4.0)
   - Flutter (1.0.0)
   - flutter_native_splash (2.4.3):
     - Flutter
+  - GoogleDataTransport (10.1.0):
+    - nanopb (~> 3.30910.0)
+    - PromisesObjC (~> 2.4)
   - GoogleUtilities/AppDelegateSwizzler (8.1.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -1277,6 +1317,9 @@ PODS:
     - GoogleUtilities/Privacy
   - GoogleUtilities/Privacy (8.1.0)
   - GoogleUtilities/Reachability (8.1.0):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/UserDefaults (8.1.0):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
   - "gRPC-C++ (1.69.0)":
@@ -1403,6 +1446,7 @@ PODS:
   - photo_manager (3.7.1):
     - Flutter
     - FlutterMacOS
+  - PromisesObjC (2.4.0)
   - RecaptchaInterop (101.0.0)
   - share_plus (0.0.1):
     - Flutter
@@ -1419,6 +1463,8 @@ DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
+  - firebase_in_app_messaging (from `.symlinks/plugins/firebase_in_app_messaging/ios`)
+  - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - image_cropper (from `.symlinks/plugins/image_cropper/ios`)
@@ -1435,6 +1481,7 @@ SPEC REPOS:
     - abseil
     - BoringSSL-GRPC
     - Firebase
+    - FirebaseABTesting
     - FirebaseAppCheckInterop
     - FirebaseAuth
     - FirebaseAuthInterop
@@ -1443,7 +1490,11 @@ SPEC REPOS:
     - FirebaseCoreInternal
     - FirebaseFirestore
     - FirebaseFirestoreInternal
+    - FirebaseInAppMessaging
+    - FirebaseInstallations
+    - FirebaseMessaging
     - FirebaseSharedSwift
+    - GoogleDataTransport
     - GoogleUtilities
     - "gRPC-C++"
     - gRPC-Core
@@ -1451,6 +1502,7 @@ SPEC REPOS:
     - leveldb-library
     - libwebp
     - nanopb
+    - PromisesObjC
     - RecaptchaInterop
     - TOCropViewController
 
@@ -1463,6 +1515,10 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_core:
     :path: ".symlinks/plugins/firebase_core/ios"
+  firebase_in_app_messaging:
+    :path: ".symlinks/plugins/firebase_in_app_messaging/ios"
+  firebase_messaging:
+    :path: ".symlinks/plugins/firebase_messaging/ios"
   Flutter:
     :path: Flutter
   flutter_native_splash:
@@ -1492,6 +1548,9 @@ SPEC CHECKSUMS:
   Firebase: f07b15ae5a6ec0f93713e30b923d9970d144af3e
   firebase_auth: 9225db04db5d8e3b46dc8940e04bc6aec6833e27
   firebase_core: f1aafb21c14f497e5498f7ffc4dc63cbb52b2594
+  firebase_in_app_messaging: 04dfc07ab81578ef83bf0c0229be258ddf287c4f
+  firebase_messaging: c17a29984eafce4b2997fe078bb0a9e0b06f5dde
+  FirebaseABTesting: c05b5ec9f1d9f21a65909525de301d375032d9a4
   FirebaseAppCheckInterop: f734c802f21fe1da0837708f0f9a27218c8a4ed0
   FirebaseAuth: 4a2aed737c84114a9d9b33d11ae1b147d6b94889
   FirebaseAuthInterop: 858e6b754966e70740a4370dd1503dfffe6dbb49
@@ -1500,9 +1559,13 @@ SPEC CHECKSUMS:
   FirebaseCoreInternal: d7f5a043c2cd01a08103ab586587c1468047bca6
   FirebaseFirestore: 2a6183381cf7679b1bb000eb76a8e3178e25dee2
   FirebaseFirestoreInternal: 6577a27cd5dc3722b900042527f86d4ea1626134
+  FirebaseInAppMessaging: 606dd4d4d5590a3d8229f363fdebb485235985b2
+  FirebaseInstallations: ae9f4902cb5bf1d0c5eaa31ec1f4e5495a0714e2
+  FirebaseMessaging: d33971b7bb252745ea6cd31ab190d1a1df4b8ed5
   FirebaseSharedSwift: 93426a1de92f19e1199fac5295a4f8df16458daa
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_native_splash: c32d145d68aeda5502d5f543ee38c192065986cf
+  GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   "gRPC-C++": cc207623316fb041a7a3e774c252cf68a058b9e8
   gRPC-Core: 860978b7db482de8b4f5e10677216309b5ff6330
@@ -1515,12 +1578,13 @@ SPEC CHECKSUMS:
   path_provider_foundation: bb55f6dbba17d0dccd6737fe6f7f34fbd0376880
   permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
   photo_manager: 1d80ae07a89a67dfbcae95953a1e5a24af7c3e62
+  PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
   TOCropViewController: 797deaf39c90e6e9ddd848d88817f6b9a8a09888
   video_player_avfoundation: dd410b52df6d2466a42d28550e33e4146928280a
   video_thumbnail: b637e0ad5f588ca9945f6e2c927f73a69a661140
 
-PODFILE CHECKSUM: a42d88218271b5e151262470d98815100d6de405
+PODFILE CHECKSUM: f2889001baff047681f9d6733ed24383b4c1c1b7
 
 COCOAPODS: 1.16.2

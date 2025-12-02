@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubits/user_cubit.dart';
 import 'package:go_router/go_router.dart';
 import '../models/user_model.dart';
+import '../services/messaging_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,6 +15,21 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _hasTriggeredMessage = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // 在登录页面加载后触发 app_open 事件（开屏动画已完成）
+    // 延迟一小段时间确保页面完全渲染
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted && !_hasTriggeredMessage) {
+        _hasTriggeredMessage = true;
+        print('🔔 Triggering app_open event after splash screen...');
+        MessagingService().triggerAppOpen();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

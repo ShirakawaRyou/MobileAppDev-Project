@@ -5,6 +5,7 @@ import 'package:csen268_project/cubits/project_cubit.dart';
 import 'package:csen268_project/widgets/my_project_card.dart';
 import 'package:csen268_project/widgets/bottom_nav_bar.dart';
 import '../routes/app_router.dart';
+import '../services/messaging_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,6 +23,9 @@ class _HomePageState extends State<HomePage> with RouteAware {
       routeObserver.subscribe(this, route);
     }
     context.read<ProjectCubit>().loadProjects();
+    
+    // 触发 home_page_viewed 事件（可选，用于 In-App Messaging）
+    MessagingService().triggerEvent('home_page_viewed');
   }
 
   @override

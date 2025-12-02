@@ -6,7 +6,7 @@ import FirebaseMessaging
 import UserNotifications
 
 @main
-@objc class AppDelegate: FlutterAppDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
+@objc class AppDelegate: FlutterAppDelegate {
   private var frontCameraMethodChannel: FlutterMethodChannel?
   private var frontCameraEventChannel: FlutterEventChannel?
   private var frontCameraEventSink: FlutterEventSink?
@@ -54,12 +54,28 @@ import UserNotifications
     frontCameraEventChannel?.setStreamHandler(streamHandler)
     
     GeneratedPluginRegistrant.register(with: self)
-    FirebaseApp.configure()
+    // Note: Firebase is automatically configured by Flutter plugins
+    // No need to call FirebaseApp.configure() here
+    
+    // 设置 Firebase Messaging 代理
+    Messaging.messaging().delegate = self
+    
     // 注册通知委托
     UNUserNotificationCenter.current().delegate = self
     let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-    UNUserNotificationCenter.current().requestAuthorization(options: authOptions) { granted, error in }
-    application.registerForRemoteNotifications()
+    UNUserNotificationCenter.current().requestAuthorization(options: authOptions) { granted, error in
+      if let error = error {
+        print("Notification authorization error: \(error.localizedDescription)")
+      } else {
+        print("Notification authorization granted: \(granted)")
+        if granted {
+          DispatchQueue.main.async {
+            application.registerForRemoteNotifications()
+          }
+        }
+      }
+    }
+    
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
   
@@ -128,12 +144,65 @@ import UserNotifications
     frontCameraEventSink = nil
     result(true)
   }
+  
+  // MARK: - APNs Token Registration
+  override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    print("APNs token registered: \(deviceToken.map { String(format: "%02.2hhx", $0) }.joined())")
+    // 将 APNs token 传递给 Firebase Messaging
+    Messaging.messaging().apnsToken = deviceToken
+  }
+  
+  override func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+    print("Failed to register for remote notifications: \(error.localizedDescription)")
+  }
 }
 
 // MARK: - FCM Delegate
 extension AppDelegate: MessagingDelegate {
   func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-    print("FCM registration token: \(fcmToken ?? "")")
+    print("FCM registration token: \(fcmToken ?? "nil")")
+    // 可以将 token 发送到服务器或保存到本地
+    if let token = fcmToken {
+      // TODO: 如果需要，可以将 token 发送到你的服务器
+      UserDefaults.standard.set(token, forKey: "fcm_token")
+    }
+  }
+}
+
+// MARK: - UNUserNotificationCenterDelegate
+// Note: FlutterAppDelegate already conforms to UNUserNotificationCenterDelegate
+// We just override the methods here
+extension AppDelegate {
+  // 当应用在前台时收到通知
+  override func userNotificationCenter(
+    _ center: UNUserNotificationCenter,
+    willPresent notification: UNNotification,
+    withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+  ) {
+    let userInfo = notification.request.content.userInfo
+    print("Notification received in foreground: \(userInfo)")
+    
+    // 即使在前台也显示通知（可选）
+    if #available(iOS 14.0, *) {
+      completionHandler([.banner, .badge, .sound])
+    } else {
+      completionHandler([.alert, .badge, .sound])
+    }
+  }
+  
+  // 用户点击通知时的处理
+  override func userNotificationCenter(
+    _ center: UNUserNotificationCenter,
+    didReceive response: UNNotificationResponse,
+    withCompletionHandler completionHandler: @escaping () -> Void
+  ) {
+    let userInfo = response.notification.request.content.userInfo
+    print("Notification clicked: \(userInfo)")
+    
+    // 处理通知点击，可以导航到特定页面
+    // TODO: 根据 userInfo 中的数据进行页面导航
+    
+    completionHandler()
   }
 }
 
