@@ -5,7 +5,7 @@ Yu Cheng Wu: Export Page
 
 Yitang Li: Home Page, Login & Registration Page, User Page, User and Project Firebase database, Android Firebase notification
 
-Yunjia Zheng: New Project Page, Camera Page, iOS Firebase notification
+Yunjia Zheng: Animated splash screen, Media Selection Page, Camera Page, iOS Firebase notification
 
 ## External APIs ##
 By opening console.firebase.google.com, log in and open the project in your workspace, then it will work.
