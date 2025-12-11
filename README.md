@@ -1,3 +1,7 @@
+## About This App ##
+
+This is a Flutter-based mobile media editing application that allows users to capture, edit, and manage photos and videos. The app features comprehensive image and video editing tools, camera integration, project management, and cloud synchronization using Firebase.
+
 ## Contribution ##
 Kaicheng Luo: Editor Page, also the idea originator
 
